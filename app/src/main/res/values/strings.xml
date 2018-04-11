@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ClientSideChirp</string>
+    <string name="invalid">Invalid Username or Password</string>
+</resources>
