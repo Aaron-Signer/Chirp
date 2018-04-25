@@ -1,4 +1,11 @@
 <resources>
-    <string name="app_name">ClientSideChirp</string>
-    <string name="invalid">Invalid Username or Password</string>
+    <string name="app_name">Chirp</string>
+    <string name="invalid">Invalid Username or Password.</string>
+    <string name="invalidPassword">Passwords do not match.</string>
+    <string name="invalidPass">Invalid Password.</string>
+    <string name="invalidEmail">Invalid Email.</string>
+    <string name="emailUsed">This email is already in use.</string>
+    <string name="longPassword">Password must be less than 25 characters.</string>
+    <string name="badUsername">Username can only contain letters or numbers. 12 characters max.</string>
+    <string name="completeFields">Please complete all fields.</string>
 </resources>

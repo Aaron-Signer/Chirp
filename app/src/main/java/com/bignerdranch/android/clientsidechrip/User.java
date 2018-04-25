@@ -1,26 +1,42 @@
 package com.bignerdranch.android.clientsidechrip;
 
-public class User
-{
-    private String password;
-    private String username;
-    private String email;
+import java.util.*;
 
-    public User(String e, String u, String p)
-    {
-        password=p;
-        username=u;
-        email=e;
-    }
+public class User {
 
-    public boolean correctPassword(String attempt)
-    {
-        return(attempt.equals(password));
-    }
+	private String handle, email, password;
+	private int ids [];
+	
+	public User(String h, String e, String p)
+	{
+		handle = h;
+		email = e;
+		password = p;
+	}
 
-    public String getUsername()
-    {
-        return username;
-    }
+	public boolean rightPassword(String pw)
+	{
+		return pw.equals(password);
+	}
+	
+	public String getHandle()
+	{
+		return handle;
+	}
 
+	public String getEmail()
+	{
+		return email;
+	}
+	
+	public void setHandle(String h)
+	{
+		handle = h;
+	}
+	
+	public void setEmail(String e)
+	{
+		email = e;
+	}
+	
 }

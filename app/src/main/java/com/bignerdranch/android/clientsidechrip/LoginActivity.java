@@ -5,28 +5,38 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity
 {
-
     private Button login;
     private Button register;
-    private TextView usernameEntry;
+    private TextView emailEntry;
     private TextView passwordEntry;
+    private String email;
+    private String password;
+    final UserRepository userDatabase = UserRepository.getInstance();
+
+    public boolean userReal()
+    {
+        return(userDatabase.getUserByEmail(email)!=null);
+    }
+
+    public boolean correctPassword()
+    {
+        return(userDatabase.getUserByEmail(email)).rightPassword(password);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        final Database d = Database.get();
 
         login = (Button) findViewById(R.id.login);
         register = (Button) findViewById(R.id.register);
-        usernameEntry = (TextView) findViewById(R.id.textEntryUsername);
-        passwordEntry = (TextView) findViewById(R.id.textEntryPassword);
-
 
         register.setOnClickListener(new View.OnClickListener()
         {
@@ -43,18 +53,28 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                usernameEntry = (TextView) findViewById(R.id.textEntryUsername);
-                passwordEntry = (TextView) findViewById(R.id.textEntryPassword);
-                if(d.userReal((String)usernameEntry.getText()))
+                emailEntry = (EditText) findViewById(R.id.textEntryEmail);
+                passwordEntry = (EditText) findViewById(R.id.textEntryPassword);
+                email = emailEntry.getText().toString();
+                password = passwordEntry.getText().toString();
+                int messageResId=0;
+                if(userReal())
                 {
-                    if(d.getUser((String)usernameEntry.getText()).correctPassword((String)passwordEntry.getText()))
+                    if(correctPassword())
                     {
-                        //Start main activity
+                        Intent intent = new Intent(LoginActivity.this, RecentChirps.class);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        messageResId = R.string.invalidPass;
+                        Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
                     }
                 }
                 else
                 {
-                    // display toast invalid username or pass
+                    messageResId = R.string.invalidEmail;
+                    Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
                 }
             }
         });
