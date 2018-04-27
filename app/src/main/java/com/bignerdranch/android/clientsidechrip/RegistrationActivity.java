@@ -105,7 +105,12 @@ public class RegistrationActivity extends AppCompatActivity
                             {
                                 if(fieldsCompleted())
                                 {
+
+                                    userDatabase.addUser(new User(u,e,p));
                                     Intent intent = new Intent(RegistrationActivity.this, RecentChirps.class);
+                                    Bundle ex = new Bundle();
+                                    ex.putString("email", e);
+                                    intent.putExtras(ex);
                                     startActivity(intent);
                                 }
                                 else

@@ -5,54 +5,67 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class RecentChirps extends AppCompatActivity
 {
 
     private RecyclerView chirpRecyclerView;
-    private ChirpAdapter adapter;
-    private LinearLayoutManager recyclerManager;
-    //private String name = ((TextView)findViewById(R.id.textEntryEmail)).toString();
-    String name = "gurnmc22@wclive.westminster.edu";
+    private RVAdapter rvAdapter;
     private ArrayList<Chirp> pq;
+    private List<Chirp> chirpList;
 
+    private User user;
+    private String email;
     final ChirpRepository chirpDataBase = ChirpRepository.getInstance();
     final UserRepository userDataBase = UserRepository.getInstance();
 
 
-    private void updateUI()
-    {
-        if(adapter == null)
-        {
-            adapter = new ChirpAdapter();
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        pq = new ArrayList<>();
-        Chirp one = new Chirp("gurnmc22@wclive.westminster.edu","hi",null);
-        Chirp two = new Chirp("gurnmc22@wclive.westminster.edu","hi",null);
-        Chirp three = new Chirp("gurnmc22@wclive.westminster.edu","hi",null);
-        pq.add(one);
-        pq.add(two);
-        pq.add(three);
-        //pq = userDataBase.getUserByEmail(name).getSortedWatchList();
+
+        //get user of current account
+        email = getIntent().getExtras().getString("email");
+        user = userDataBase.getUserByEmail(email);
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_chirps);
         chirpRecyclerView = findViewById(R.id.ChirpList);
-        recyclerManager = new LinearLayoutManager(this);
-        chirpRecyclerView.setLayoutManager(recyclerManager);
+        chirpRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         updateUI();
-        chirpRecyclerView.setAdapter(adapter);
 
+    }
+
+    private void updateUI()
+    {
+        if (rvAdapter == null) {
+            rvAdapter = new RVAdapter();
+            chirpRecyclerView.setAdapter(rvAdapter);
+        }
+        rvAdapter.notifyDataSetChanged();
+        // schedule request
+        sendListChirpsRequest();
+    }
+
+    private void sendListChirpsRequest() {
+        RequestManager.get()
+                .sendListChirpsRequest(this,
+                        (chirps) -> {
+                            chirpList = chirps;
+                            pq = getSortedChirpList();
+                            updateUI();
+                        });
+    }
+
+    public ArrayList<Chirp> getSortedChirpList()
+    {
+        ArrayList<Chirp> ch = new ArrayList<>();
+        return ch;
     }
 
     private class ChirpHolder extends RecyclerView.ViewHolder
@@ -71,21 +84,22 @@ public class RecentChirps extends AppCompatActivity
 
         public void bind(int position)
         {
-            Chirp c = pq.get(position);
-            chirper.setText(userDataBase.getUserByEmail(name).getHandle());
+            Chirp c = chirpList.get(position);
+            chirper.setText(c.email);
             chirpTextContent.setText(c.message);
             this.ind = position;
         }
 
     }
 
-    private class ChirpAdapter extends RecyclerView.Adapter < ChirpHolder >
+    private class RVAdapter extends RecyclerView.Adapter < ChirpHolder >
     {
-
         @Override
         public int getItemCount()
         {
-            return pq.size();
+            if(chirpList==null)
+                return 0;
+            return chirpList.size();
         }
 
         @Override

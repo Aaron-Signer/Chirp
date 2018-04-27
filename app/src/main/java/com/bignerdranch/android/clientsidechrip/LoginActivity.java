@@ -63,6 +63,9 @@ public class LoginActivity extends AppCompatActivity
                     if(correctPassword())
                     {
                         Intent intent = new Intent(LoginActivity.this, RecentChirps.class);
+                        Bundle ex = new Bundle();
+                        ex.putString("email",email);
+                        intent.putExtras(ex);
                         startActivity(intent);
                     }
                     else
