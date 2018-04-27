@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class RecentChirps extends AppCompatActivity
 {
@@ -18,36 +18,41 @@ public class RecentChirps extends AppCompatActivity
     private RecyclerView chirpRecyclerView;
     private ChirpAdapter adapter;
     private LinearLayoutManager recyclerManager;
+    //private String name = ((TextView)findViewById(R.id.textEntryEmail)).toString();
+    String name = "gurnmc22@wclive.westminster.edu";
+    private ArrayList<Chirp> pq;
 
-    final ChirpRepository dataBase = ChirpRepository.getInstance();
+    final ChirpRepository chirpDataBase = ChirpRepository.getInstance();
+    final UserRepository userDataBase = UserRepository.getInstance();
 
-//    //@Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-//    {
-//        View view = inflater.inflate(R.layout.activity_recent_chirps, container, false);
-//        chirpRecyclerView = (RecyclerView) view.findViewById(R.id.ChirpList);
-//        chirpRecyclerView.setLayoutManager(new LinearLayoutManager(RecentChirps.this));
-//        updateUI();
-//        return view;
-//    }
 
     private void updateUI()
     {
-        List<Chirp> chirps = new ArrayList<Chirp>();
-        dataBase.getChirps("signap22@wclive.westminster.edu");
-        adapter = new ChirpAdapter(chirps);
-        chirpRecyclerView.setAdapter(adapter);
+        if(adapter == null)
+        {
+            adapter = new ChirpAdapter();
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        pq = new ArrayList<>();
+        Chirp one = new Chirp("gurnmc22@wclive.westminster.edu","hi",null);
+        Chirp two = new Chirp("gurnmc22@wclive.westminster.edu","hi",null);
+        Chirp three = new Chirp("gurnmc22@wclive.westminster.edu","hi",null);
+        pq.add(one);
+        pq.add(two);
+        pq.add(three);
+        //pq = userDataBase.getUserByEmail(name).getSortedWatchList();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_chirps);
-        chirpRecyclerView = (RecyclerView) findViewById(R.id.ChirpList);
+        chirpRecyclerView = findViewById(R.id.ChirpList);
         recyclerManager = new LinearLayoutManager(this);
         chirpRecyclerView.setLayoutManager(recyclerManager);
         updateUI();
+        chirpRecyclerView.setAdapter(adapter);
+
     }
 
     private class ChirpHolder extends RecyclerView.ViewHolder
@@ -56,40 +61,44 @@ public class RecentChirps extends AppCompatActivity
         private TextView chirpTextContent;
         private int ind;
 
+
         public ChirpHolder(LayoutInflater inflater, ViewGroup parent)
         {
            super(inflater.inflate(R.layout.chirp, parent,false));
-           chirper = item.findViewById(R.id.chirper_username);
+           chirper = itemView.findViewById(R.id.chirper_username);
            chirpTextContent = itemView.findViewById(R.id.chirp_text);
+        }
+
+        public void bind(int position)
+        {
+            Chirp c = pq.get(position);
+            chirper.setText(userDataBase.getUserByEmail(name).getHandle());
+            chirpTextContent.setText(c.message);
+            this.ind = position;
         }
 
     }
 
     private class ChirpAdapter extends RecyclerView.Adapter < ChirpHolder >
     {
-        private List < Chirp > mChirps;
-        public ChirpAdapter( List< Chirp > chirps)
-        {
-            mChirps = chirps;
-        }
 
         @Override
         public int getItemCount()
         {
-            return mChirps.size();
+            return pq.size();
         }
 
         @Override
         public ChirpHolder onCreateViewHolder( ViewGroup parent, int viewType)
         {
-            LayoutInflater layoutInflater = LayoutInflater.from(RecentChirps.this);
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
             return new ChirpHolder(layoutInflater, parent);
         }
 
         @Override
         public void onBindViewHolder(ChirpHolder holder, int position)
         {
-
+            holder.bind(position);
         }
     }
 
