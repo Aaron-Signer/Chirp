@@ -16,6 +16,7 @@ public class RegistrationActivity extends AppCompatActivity
     private TextView username;
     private TextView pass;
     private TextView cpass;
+    private boolean goodInput;
     final UserRepository userDatabase = UserRepository.getInstance();
     String p;
     String cp;
@@ -37,10 +38,22 @@ public class RegistrationActivity extends AppCompatActivity
         return (p.length()<25);
     }
 
-    public boolean userReal()
+    private void sendUserRegistrationRequest()
     {
-        return(userDatabase.getUserByEmail(e)!=null);
+        try {
+            RequestManager.get()
+                    .sendUserRegistrationRequest(e,u, p, this,
+                            (gInput) -> {
+                                goodInput = gInput;
+                                goodInput = true;
+                            });
+        }
+        catch(Exception e)
+        {
+            goodInput = false;
+        }
     }
+
 
     public boolean goodUsername()
     {
@@ -85,7 +98,14 @@ public class RegistrationActivity extends AppCompatActivity
                 cp = cpass.getText().toString();
                 e = email.getText().toString();
                 u =  username.getText().toString();
-
+                sendUserRegistrationRequest();
+                try {
+                    Thread.sleep(5000);
+                }
+                catch(InterruptedException e)
+                {
+                    Thread.currentThread().interrupt();
+                }
                 int messageResId = 0;
 
 
@@ -94,24 +114,24 @@ public class RegistrationActivity extends AppCompatActivity
                 {
                     if(goodLength())
                     {
-                        if(userReal())
-                        {
-                            messageResId = R.string.emailUsed;
-                            Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                        {
                             if(goodUsername())
                             {
                                 if(fieldsCompleted())
                                 {
-
-                                    userDatabase.addUser(new User(u,e,p));
-                                    Intent intent = new Intent(RegistrationActivity.this, RecentChirps.class);
-                                    Bundle ex = new Bundle();
-                                    ex.putString("email", e);
-                                    intent.putExtras(ex);
-                                    startActivity(intent);
+                                    if(goodInput)
+                                    {
+                                        goodInput = false;
+                                        Intent intent = new Intent(RegistrationActivity.this, RecentChirps.class);
+                                        Bundle ex = new Bundle();
+                                        ex.putString("email", e);
+                                        intent.putExtras(ex);
+                                        startActivity(intent);
+                                    }
+                                    else
+                                    {
+                                        messageResId = R.string.emailUsed;
+                                        Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                                 else
                                 {
@@ -124,7 +144,7 @@ public class RegistrationActivity extends AppCompatActivity
                                 messageResId = R.string.badUsername;
                                 Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
                             }
-                        }
+
                     }
                     else
                     {
@@ -141,5 +161,41 @@ public class RegistrationActivity extends AppCompatActivity
             }
         });
 
+    }
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume()
+    {
+        goodInput = false;
+        super.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

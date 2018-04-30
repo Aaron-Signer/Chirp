@@ -27,18 +27,15 @@ public class RecentChirps extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         //get user of current account
         email = getIntent().getExtras().getString("email");
         user = userDataBase.getUserByEmail(email);
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_chirps);
         chirpRecyclerView = findViewById(R.id.ChirpList);
         chirpRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         updateUI();
-
     }
 
     private void updateUI()
@@ -54,7 +51,7 @@ public class RecentChirps extends AppCompatActivity
 
     private void sendListChirpsRequest() {
         RequestManager.get()
-                .sendListChirpsRequest(this,
+                .sendListChirpsRequest(email,this,
                         (chirps) -> {
                             chirpList = chirps;
                             pq = getSortedChirpList();

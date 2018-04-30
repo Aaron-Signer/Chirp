@@ -18,16 +18,24 @@ public class LoginActivity extends AppCompatActivity
     private String email;
     private String password;
     final UserRepository userDatabase = UserRepository.getInstance();
+    private boolean goodInput=false;
 
-    public boolean userReal()
-    {
-        return(userDatabase.getUserByEmail(email)!=null);
+
+    private void sendUserVerificationRequest() {
+        try {
+            RequestManager.get()
+                    .sendUserVerificationRequest(email, password, this,
+                            (gInput) -> {
+                                goodInput = gInput;
+                            });
+        }
+        catch(Exception e)
+        {
+            goodInput = false;
+        }
     }
 
-    public boolean correctPassword()
-    {
-        return(userDatabase.getUserByEmail(email)).rightPassword(password);
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -57,26 +65,21 @@ public class LoginActivity extends AppCompatActivity
                 passwordEntry = (EditText) findViewById(R.id.textEntryPassword);
                 email = emailEntry.getText().toString();
                 password = passwordEntry.getText().toString();
+                sendUserVerificationRequest();
+
                 int messageResId=0;
-                if(userReal())
+                if(goodInput)
                 {
-                    if(correctPassword())
-                    {
-                        Intent intent = new Intent(LoginActivity.this, RecentChirps.class);
-                        Bundle ex = new Bundle();
-                        ex.putString("email",email);
-                        intent.putExtras(ex);
-                        startActivity(intent);
-                    }
-                    else
-                    {
-                        messageResId = R.string.invalidPass;
-                        Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
-                    }
+                    goodInput = false;
+                    Intent intent = new Intent(LoginActivity.this, RecentChirps.class);
+                    Bundle ex = new Bundle();
+                    ex.putString("email",email);
+                    intent.putExtras(ex);
+                    startActivity(intent);
                 }
                 else
                 {
-                    messageResId = R.string.invalidEmail;
+                    messageResId = R.string.invalidEmailPassword;
                     Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -92,6 +95,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onResume()
     {
+        goodInput = false;
         super.onResume();
     }
 
