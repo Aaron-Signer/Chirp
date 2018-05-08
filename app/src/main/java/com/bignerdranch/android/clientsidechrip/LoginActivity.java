@@ -17,22 +17,23 @@ public class LoginActivity extends AppCompatActivity
     private TextView passwordEntry;
     private String email;
     private String password;
+    int messageResId=0;
     final UserRepository userDatabase = UserRepository.getInstance();
-    private boolean goodInput=false;
 
 
     private void sendUserVerificationRequest() {
-        try {
+
             RequestManager.get()
                     .sendUserVerificationRequest(email, password, this,
                             (gInput) -> {
-                                goodInput = gInput;
+                                Intent intent = new Intent(LoginActivity.this, RecentChirps.class);
+                                Bundle ex = new Bundle();
+                                ex.putString("email",email);
+                                intent.putExtras(ex);
+                                startActivity(intent);
                             });
-        }
-        catch(Exception e)
-        {
-            goodInput = false;
-        }
+
+
     }
 
 
@@ -67,37 +68,11 @@ public class LoginActivity extends AppCompatActivity
                 password = passwordEntry.getText().toString();
                 sendUserVerificationRequest();
 
-                int messageResId=0;
-                if(goodInput)
-                {
-                    goodInput = false;
-                    Intent intent = new Intent(LoginActivity.this, RecentChirps.class);
-                    Bundle ex = new Bundle();
-                    ex.putString("email",email);
-                    intent.putExtras(ex);
-                    startActivity(intent);
-                }
-                else
-                {
-                    messageResId = R.string.invalidEmailPassword;
-                    Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
-                }
             }
         });
     }
 
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-    }
 
-    @Override
-    public void onResume()
-    {
-        goodInput = false;
-        super.onResume();
-    }
 
     @Override
     public void onPause()

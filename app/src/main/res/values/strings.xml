@@ -8,4 +8,7 @@
     <string name="longPassword">Password must be less than 25 characters.</string>
     <string name="badUsername">Username can only contain letters or numbers. 12 characters max.</string>
     <string name="completeFields">Please complete all fields.</string>
+    <string name="try_again">Try again later.</string>
+    <string name="user_not_exist">User does not exist.</string>
+    <string name="on_watch_list">User already on watch list.</string>
 </resources>

@@ -1,11 +1,14 @@
 package com.bignerdranch.android.clientsidechrip;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,21 +23,47 @@ public class RecentChirps extends AppCompatActivity
 
     private User user;
     private String email;
-    final ChirpRepository chirpDataBase = ChirpRepository.getInstance();
-    final UserRepository userDataBase = UserRepository.getInstance();
-
+    private Button newChirp;
+    private Button addRemoveUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        //get user of current account
-        email = getIntent().getExtras().getString("email");
-        user = userDataBase.getUserByEmail(email);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_chirps);
+        newChirp = (Button) findViewById(R.id.create_chirp_button);
+        addRemoveUser = (Button) findViewById(R.id.add_remove_user);
+
+        //get user of current account
+        email = getIntent().getExtras().getString("email");
+
         chirpRecyclerView = findViewById(R.id.ChirpList);
         chirpRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        newChirp.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(RecentChirps.this, CreateChirpActivity.class);
+                Bundle ex = new Bundle();
+                ex.putString("email", email);
+                intent.putExtras(ex);
+                startActivity(intent);
+            }
+        });
+
+            addRemoveUser.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(RecentChirps.this, WatchlistActivity.class);
+                Bundle ex = new Bundle();
+                ex.putString("email", email);
+                intent.putExtras(ex);
+                startActivity(intent);
+            }
+        });
+
         updateUI();
     }
 
@@ -82,8 +111,8 @@ public class RecentChirps extends AppCompatActivity
         public void bind(int position)
         {
             Chirp c = chirpList.get(position);
-            chirper.setText(c.email);
-            chirpTextContent.setText(c.message);
+            chirper.setText(c.handle);
+            chirpTextContent.setText(c.message+c.date.toString());
             this.ind = position;
         }
 
@@ -111,6 +140,36 @@ public class RecentChirps extends AppCompatActivity
         {
             holder.bind(position);
         }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 

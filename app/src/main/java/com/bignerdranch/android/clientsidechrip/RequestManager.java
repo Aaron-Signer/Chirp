@@ -11,6 +11,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.android.volley.NetworkResponse;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -28,7 +30,9 @@ public class RequestManager {
     }
 
     //private static final String BASE_URL = "http://chirp-env-1.rgkwwzpdqw.us-east-2.elasticbeanstalk.com";
-    private static final String BASE_URL = "http://192.168.1.8:5000";
+    //private static final String BASE_URL = "http://192.168.1.2:5000";
+    private static final String BASE_URL = "http://chirp-env-1.rgkwwzpdqw.us-east-2.elasticbeanstalk.com";
+
     private RequestQueue requestQueue;
 
     public void sendListChirpsRequest(String e,Context c, final ListUsersResponseHandler handler) {
@@ -47,19 +51,22 @@ public class RequestManager {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("HTTP","That didn't work!");
+                NetworkResponse n = error.networkResponse;
+                int status = n.statusCode;
             }
         });
 
         queue.add(stringRequest);
     }
 
-    public void sendUserVerificationRequest(String e, String p, Context c, final verifyResponseHandler handler) {
+    public void sendUserVerificationRequest(String e, String p, Context c, final VerifyResponseHandler handler) {
         RequestQueue queue = getRequestQueue(c);
-        String url = BASE_URL+"/users/verifyUser/"+e+"/"+p;
+        String url = BASE_URL+"/users/verifyEmailAndPassword/"+e+"/"+p;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(String response)
+                    {
                         Log.d("HTTP", "Response is: "+ response);
                         Gson gson = new Gson();
                         boolean isValid = gson.fromJson(response, Boolean.class);
@@ -69,6 +76,20 @@ public class RequestManager {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("HTTP","That didn't work!");
+
+                NetworkResponse n = error.networkResponse;
+                int status = n.statusCode;
+                if(status==402||status==401)
+                {
+                    int messageResId = R.string.invalidEmailPassword;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+                if(status==500)
+                {
+                    int messageResId = R.string.try_again;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -77,7 +98,7 @@ public class RequestManager {
 
     public void sendUserRegistrationRequest(String e, String u, String p, Context c, final RegistrationResponseHandler handler) {
         RequestQueue queue = getRequestQueue(c);
-        String url = BASE_URL+"/users/"+e+"/"+u+"/"+p;
+        String url = BASE_URL+"/users/createUser/"+e+"/"+u+"/"+p;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -91,12 +112,111 @@ public class RequestManager {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("HTTP","That didn't work!");
+                NetworkResponse n = error.networkResponse;
+                int status = n.statusCode;
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+    public void addChirpRequest(String e, String ch, Context c, final SendChirpsResponseHandler handler) {
+        RequestQueue queue = getRequestQueue(c);
+        String url = BASE_URL+"/chirps/addChirp/"+e+"/"+ch;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("HTTP", "Response is: "+ response);
+                        Gson gson = new Gson();
+                        boolean added = gson.fromJson(response, Boolean.class);
+                        handler.handleResponse(added);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("HTTP","That didn't work!");
+                NetworkResponse n = error.networkResponse;
+                int status = n.statusCode;
             }
         });
 
         queue.add(stringRequest);
     }
 
+        public void removeUserWatchlistRequest(String e, String u, Context c, final RemoveUserWatchlistHandler handler) {
+        RequestQueue queue = getRequestQueue(c);
+        String url = BASE_URL+"/users/removeFromWatchlist/"+e+"/"+u;
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("HTTP", "Response is: "+ response);
+                        Gson gson = new Gson();
+                        boolean added = gson.fromJson(response, Boolean.class);
+                        handler.handleResponse(added);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("HTTP","That didn't work!");
+                NetworkResponse n = error.networkResponse;
+                int status = n.statusCode;
+
+                if(status==402)
+                {
+                    int messageResId = R.string.user_not_exist;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+                if(status==500)
+                {
+                    int messageResId = R.string.try_again;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    public void addUserWatchlistRequest(String e, String u, Context c, final AddUserWatchlistHandler handler) {
+        RequestQueue queue = getRequestQueue(c);
+        String url = BASE_URL+"/users/addToWatchlist/"+e+"/"+u;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("HTTP", "Response is: "+ response);
+                        Gson gson = new Gson();
+                        boolean added = gson.fromJson(response, Boolean.class);
+                        handler.handleResponse(added);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("HTTP","That didn't work!");
+                NetworkResponse n = error.networkResponse;
+                int status = n.statusCode;
+
+                if(status==402)
+                {
+                    int messageResId = R.string.user_not_exist;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+                if(status==412)
+                {
+                    int messageResId = R.string.on_watch_list;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+                if(status==500)
+                {
+                    int messageResId = R.string.try_again;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        queue.add(stringRequest);
+    }
 
 
     @NonNull

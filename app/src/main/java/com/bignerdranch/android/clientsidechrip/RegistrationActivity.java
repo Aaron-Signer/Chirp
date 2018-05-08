@@ -16,12 +16,11 @@ public class RegistrationActivity extends AppCompatActivity
     private TextView username;
     private TextView pass;
     private TextView cpass;
-    private boolean goodInput;
-    final UserRepository userDatabase = UserRepository.getInstance();
     String p;
     String cp;
     String e;
     String u;
+    int messageResId = 0;
 
     public boolean fieldsCompleted()
     {
@@ -40,18 +39,20 @@ public class RegistrationActivity extends AppCompatActivity
 
     private void sendUserRegistrationRequest()
     {
-        try {
+
             RequestManager.get()
                     .sendUserRegistrationRequest(e,u, p, this,
                             (gInput) -> {
-                                goodInput = gInput;
-                                goodInput = true;
+
+                                    Intent intent = new Intent(RegistrationActivity.this, RecentChirps.class);
+                                    Bundle ex = new Bundle();
+                                    ex.putString("email", e);
+                                    intent.putExtras(ex);
+                                    startActivity(intent);
+
                             });
-        }
-        catch(Exception e)
-        {
-            goodInput = false;
-        }
+
+
     }
 
 
@@ -98,44 +99,21 @@ public class RegistrationActivity extends AppCompatActivity
                 cp = cpass.getText().toString();
                 e = email.getText().toString();
                 u =  username.getText().toString();
-                sendUserRegistrationRequest();
-                try {
-                    Thread.sleep(5000);
-                }
-                catch(InterruptedException e)
-                {
-                    Thread.currentThread().interrupt();
-                }
-                int messageResId = 0;
 
 
-
-                if(passwordsMatch())
+                if(fieldsCompleted())
                 {
                     if(goodLength())
                     {
                             if(goodUsername())
                             {
-                                if(fieldsCompleted())
+                                if(passwordsMatch())
                                 {
-                                    if(goodInput)
-                                    {
-                                        goodInput = false;
-                                        Intent intent = new Intent(RegistrationActivity.this, RecentChirps.class);
-                                        Bundle ex = new Bundle();
-                                        ex.putString("email", e);
-                                        intent.putExtras(ex);
-                                        startActivity(intent);
-                                    }
-                                    else
-                                    {
-                                        messageResId = R.string.emailUsed;
-                                        Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
-                                    }
+                                    sendUserRegistrationRequest();
                                 }
                                 else
                                 {
-                                    messageResId = R.string.completeFields;
+                                    messageResId = R.string.invalidPassword;
                                     Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -154,7 +132,7 @@ public class RegistrationActivity extends AppCompatActivity
                 }
                 else
                 {
-                    messageResId = R.string.invalidPassword;
+                    messageResId = R.string.completeFields;
                     Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
                 }
 
@@ -169,11 +147,7 @@ public class RegistrationActivity extends AppCompatActivity
     }
 
     @Override
-    public void onResume()
-    {
-        goodInput = false;
-        super.onResume();
-    }
+    public void onResume() { super.onResume(); }
 
     @Override
     public void onPause()
