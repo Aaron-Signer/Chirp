@@ -4,7 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".WatchlistActivity">
+
+    <LinearLayout
+        android:layout_weight=".4"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        tools:context=".WatchlistActivity">
 
     <EditText
         android:id="@+id/handle_to_watch"
@@ -28,5 +36,16 @@
         android:layout_height="wrap_content"
         android:layout_weight=".3"
         android:text="Remove" />
-    
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/UserList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight=".6"
+        android:visibility="visible">
+
+    </android.support.v7.widget.RecyclerView>
+
 </LinearLayout>
