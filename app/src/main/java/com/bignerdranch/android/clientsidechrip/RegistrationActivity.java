@@ -76,6 +76,16 @@ public class RegistrationActivity extends AppCompatActivity
         return goodUN;
     }
 
+    public boolean noSpacesInPass()
+    {
+        for(int i = 0; i<p.length(); i++)
+        {
+            if(p.charAt(i)==' ')
+                return false;
+        }
+        return true;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -109,7 +119,15 @@ public class RegistrationActivity extends AppCompatActivity
                             {
                                 if(passwordsMatch())
                                 {
-                                    sendUserRegistrationRequest();
+                                    if(noSpacesInPass())
+                                    {
+                                        sendUserRegistrationRequest();
+                                    }
+                                    else
+                                    {
+                                        int messageResId = R.string.no_spaces_password;
+                                        Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                                 else
                                 {

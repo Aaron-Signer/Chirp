@@ -7,6 +7,13 @@
     android:orientation="vertical"
     tools:context=".CreateChirpActivity">
 
+    <Button
+        android:id="@+id/send_chirp_to_server"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight=".9"
+        android:text="Send Chirp" />
+
     <EditText
         android:id="@+id/chirp_contents"
         android:layout_width="match_parent"
@@ -14,12 +21,8 @@
         android:layout_weight=".1"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name" />
+        android:text=""
+        android:gravity="top"/>
 
-    <Button
-        android:id="@+id/send_chirp_to_server"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight=".9"
-        android:text="Send Chirp" />
+
 </LinearLayout>

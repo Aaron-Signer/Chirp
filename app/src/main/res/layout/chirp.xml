@@ -22,4 +22,11 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="chirp_text" />
+
+    <TextView
+        android:id="@+id/chirp_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="chirp_text" />
 </LinearLayout>

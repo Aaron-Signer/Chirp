@@ -114,6 +114,19 @@ public class RequestManager {
                 Log.d("HTTP","That didn't work!");
                 NetworkResponse n = error.networkResponse;
                 int status = n.statusCode;
+
+                if(status==409)
+                {
+                    int messageResId = R.string.email_used;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+
+                if(status==411)
+                {
+                    int messageResId = R.string.username_used;
+                    Toast.makeText(c.getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

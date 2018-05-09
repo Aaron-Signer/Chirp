@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CreateChirpActivity extends AppCompatActivity
 {
@@ -32,14 +33,20 @@ public class CreateChirpActivity extends AppCompatActivity
             {
 
                 chirp = (EditText)findViewById(R.id.chirp_contents);
-                try {
-                    chirpString = java.net.URLEncoder.encode(chirp.getText().toString(), "UTF-8");
-                }
-                catch(Exception e)
-                {
+                String s = chirp.getText().toString();
 
+                if(s.length()<282) {
+                    try {
+                        chirpString = java.net.URLEncoder.encode(chirp.getText().toString(), "UTF-8");
+                    } catch (Exception e) {
+
+                    }
+                    addChirpRequest();
                 }
-                addChirpRequest();
+                else{
+                    int messageResId = R.string.max_chirp_length;
+                    Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                }
 
             }
         });

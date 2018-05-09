@@ -5,13 +5,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class RecentChirps extends AppCompatActivity
 {
@@ -31,6 +35,10 @@ public class RecentChirps extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_chirps);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         newChirp = (Button) findViewById(R.id.create_chirp_button);
         addRemoveUser = (Button) findViewById(R.id.add_remove_user);
 
@@ -83,7 +91,7 @@ public class RecentChirps extends AppCompatActivity
                 .sendListChirpsRequest(email,this,
                         (chirps) -> {
                             chirpList = chirps;
-                            pq = getSortedChirpList();
+                            chirpList = getSortedChirpList();
                             updateUI();
                         });
     }
@@ -91,6 +99,24 @@ public class RecentChirps extends AppCompatActivity
     public ArrayList<Chirp> getSortedChirpList()
     {
         ArrayList<Chirp> ch = new ArrayList<>();
+        ArrayList<Chirp> fin = new ArrayList<>();
+        ChirpComparator comp = new ChirpComparator();
+        PriorityQueue<Chirp> watchlist = new PriorityQueue<Chirp>(1, comp);
+                    Log.d("Comparing", "\n");
+
+        for(Chirp c: chirpList) {
+            watchlist.add(c);
+            Log.d("Comparing", watchlist.peek().getDate().toString());
+        }
+
+        while(watchlist.peek() != null)
+            ch.add(watchlist.poll()) ;
+
+
+//        for(Chirp c: watchlist) {
+//            ch.add(c);
+//        }
+
         return ch;
     }
 
@@ -98,6 +124,7 @@ public class RecentChirps extends AppCompatActivity
     {
         private TextView chirper;
         private TextView chirpTextContent;
+        private TextView chirpDate;
         private int ind;
 
 
@@ -106,13 +133,22 @@ public class RecentChirps extends AppCompatActivity
            super(inflater.inflate(R.layout.chirp, parent,false));
            chirper = itemView.findViewById(R.id.chirper_username);
            chirpTextContent = itemView.findViewById(R.id.chirp_text);
+           chirpDate = itemView.findViewById(R.id.chirp_date);
+
         }
 
         public void bind(int position)
         {
             Chirp c = chirpList.get(position);
             chirper.setText(c.handle);
-            chirpTextContent.setText(c.message+c.date.toString());
+            chirpTextContent.setText(c.message);
+            chirpDate.setText(c.date.toString());
+//            Date cur = new Date();
+//            int curTime = cur.getMinutes() + cur.getHours()*60 + cur.getDay()*1440;
+//            if(timeSince < 1)
+//                chirpDate.setText("Just now.");
+//            else
+//                chirpDate.setText(Integer.toString(timeSince) + " minutes ago.");
             this.ind = position;
         }
 

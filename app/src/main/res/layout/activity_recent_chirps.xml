@@ -7,12 +7,15 @@
     android:orientation="vertical"
     tools:context=".RecentChirps">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/ChirpList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight=".8">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="511dp"
+        android:layout_weight=".8"></android.support.v7.widget.RecyclerView>
 
     <LinearLayout
         android:orientation="horizontal"
