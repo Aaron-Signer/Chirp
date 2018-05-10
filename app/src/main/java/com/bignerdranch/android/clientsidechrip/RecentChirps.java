@@ -8,10 +8,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,20 +32,60 @@ public class RecentChirps extends AppCompatActivity
 
     private User user;
     private String email;
-    private Button newChirp;
+    private Button newTextChirp;
+    private Button newImageChirp;
     private Button addRemoveUser;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Database.get().logOut();
+        try
+        {
+            Log.d("getfilesdir",getFilesDir().toString());
+            Database.get().save(new File(getFilesDir(), "info"));
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        Intent i = new Intent(this,LoginActivity.class);
+        startActivity(i);
+        finish();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
+        try
+        {
+            Database.load(new File(getFilesDir(), "info"));
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        if(!Database.get().isLoggedIn())
+            finish();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_chirps);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        newChirp = (Button) findViewById(R.id.create_chirp_button);
+
+        newTextChirp = (Button) findViewById(R.id.create_text_chirp_button);
+        newImageChirp = (Button) findViewById(R.id.create_image_chirp_button);
         addRemoveUser = (Button) findViewById(R.id.add_remove_user);
+
 
         //get user of current account
         email = getIntent().getExtras().getString("email");
@@ -48,7 +93,19 @@ public class RecentChirps extends AppCompatActivity
         chirpRecyclerView = findViewById(R.id.ChirpList);
         chirpRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        newChirp.setOnClickListener(new View.OnClickListener(){
+        newImageChirp.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(RecentChirps.this, CreateImageChirp.class);
+                Bundle ex = new Bundle();
+                ex.putString("email", email);
+                intent.putExtras(ex);
+                startActivity(intent);
+            }
+        });
+
+        newTextChirp.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v)
             {
@@ -140,16 +197,35 @@ public class RecentChirps extends AppCompatActivity
         public void bind(int position)
         {
             Chirp c = chirpList.get(position);
-            chirper.setText(c.handle);
-            chirpTextContent.setText(c.message);
-            chirpDate.setText(c.date.toString());
-//            Date cur = new Date();
-//            int curTime = cur.getMinutes() + cur.getHours()*60 + cur.getDay()*1440;
-//            if(timeSince < 1)
-//                chirpDate.setText("Just now.");
-//            else
-//                chirpDate.setText(Integer.toString(timeSince) + " minutes ago.");
+//            chirpDate.setText(c.date.toString());
+            Date cur = new Date();
+            double curTime = cur.getTime() + (4*60*60*1000);
+            double chirpTime = c.getDate().getTime();
+            double dif = (curTime - chirpTime)*.001/60;
+            int res = (int) dif;
+            if(res<34560) {
+
+                chirper.setText(c.handle);
+                chirpTextContent.setText(c.message);
+
+                if (res < 1)
+                    chirpDate.setText("Just now.");
+                else if (res > 1 && res < 60)
+                    chirpDate.setText(Integer.toString(res) + " minutes ago.");
+                else if (res >= 60 && res < (1440)) {
+                    if (res / 60 == 1)
+                        chirpDate.setText(Integer.toString(res / 60) + " hour ago.");
+                    else
+                        chirpDate.setText(Integer.toString(res / 60) + " hours ago.");
+                } else if (res >= (1440) && res < 34560) {
+                    if (res / 1440 == 1)
+                        chirpDate.setText(Integer.toString(res / 60) + " day ago.");
+                    else
+                        chirpDate.setText(Integer.toString(res / 60) + " days ago.");
+                }
+            }
             this.ind = position;
+
         }
 
     }
@@ -182,12 +258,16 @@ public class RecentChirps extends AppCompatActivity
     public void onResume()
     {
         super.onResume();
+        if(!Database.get().isLoggedIn())
+            finish();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
+
+
     }
 
     @Override
@@ -200,6 +280,16 @@ public class RecentChirps extends AppCompatActivity
     public void onDestroy()
     {
         super.onDestroy();
+        try
+        {
+            Log.d("getfilesdir",getFilesDir().toString());
+            Database.get().save(new File(getFilesDir(), "info"));
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override

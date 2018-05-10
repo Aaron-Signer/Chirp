@@ -21,7 +21,8 @@
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".RecentChirps" />
         <activity android:name=".CreateChirpActivity" />
-        <activity android:name=".WatchlistActivity"></activity>
+        <activity android:name=".WatchlistActivity" />
+        <activity android:name=".CreateImageChirp"></activity>
     </application>
 
 </manifest>

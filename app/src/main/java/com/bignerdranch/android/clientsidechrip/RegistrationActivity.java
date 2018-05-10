@@ -3,11 +3,14 @@ package com.bignerdranch.android.clientsidechrip;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class RegistrationActivity extends AppCompatActivity
 {
@@ -43,7 +46,15 @@ public class RegistrationActivity extends AppCompatActivity
             RequestManager.get()
                     .sendUserRegistrationRequest(e,u, p, this,
                             (gInput) -> {
+                                try
+                                {
+                                    Log.d("getfilesdir",getFilesDir().toString());
+                                    Database.get().save(new File(getFilesDir(), "info"));
+                                }
+                                catch(Exception e)
+                                {
 
+                                }
                                     Intent intent = new Intent(RegistrationActivity.this, RecentChirps.class);
                                     Bundle ex = new Bundle();
                                     ex.putString("email", e);
@@ -171,6 +182,7 @@ public class RegistrationActivity extends AppCompatActivity
     public void onPause()
     {
         super.onPause();
+        finish();
     }
 
     @Override
@@ -183,6 +195,16 @@ public class RegistrationActivity extends AppCompatActivity
     public void onDestroy()
     {
         super.onDestroy();
+        try
+        {
+            Log.d("getfilesdir",getFilesDir().toString());
+            Database.get().save(new File(getFilesDir(), "info"));
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        finish();
     }
 
     @Override

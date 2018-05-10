@@ -3,11 +3,16 @@ package com.bignerdranch.android.clientsidechrip;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class CreateChirpActivity extends AppCompatActivity
 {
@@ -39,7 +44,7 @@ public class CreateChirpActivity extends AppCompatActivity
                     try {
                         chirpString = java.net.URLEncoder.encode(chirp.getText().toString(), "UTF-8");
                     } catch (Exception e) {
-
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                     addChirpRequest();
                 }
@@ -57,13 +62,58 @@ public class CreateChirpActivity extends AppCompatActivity
             RequestManager.get()
                     .addChirpRequest(email, chirpString, this,
                             (added) -> {
-                                Intent intent = new Intent(CreateChirpActivity.this, RecentChirps.class);
-                                Bundle ex = new Bundle();
-                                ex.putString("email",email);
-                                intent.putExtras(ex);
-                                startActivity(intent);
+                               finish();
                             });
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Database.get().logOut();
+        try
+        {
+            Log.d("getfilesdir",getFilesDir().toString());
+            Database.get().save(new File(getFilesDir(), "info"));
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        Intent i = new Intent(this,LoginActivity.class);
+        startActivity(i);
+        finish();
+        return true;
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        finish();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        try
+        {
+            Log.d("getfilesdir",getFilesDir().toString());
+            Database.get().save(new File(getFilesDir(), "info"));
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }

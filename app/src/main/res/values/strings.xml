@@ -14,4 +14,5 @@
     <string name="on_watch_list">User already on watch list.</string>
     <string name="max_chirp_length">A chirp cannot exceed 281 characters.</string>
     <string name="no_spaces_password">No spaces are allowed in passwords.</string>
+    <string name="logout_string">Logout</string>
 </resources>

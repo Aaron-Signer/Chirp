@@ -7,38 +7,43 @@
     android:orientation="vertical"
     tools:context=".RecentChirps">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/ChirpList"
         android:layout_width="match_parent"
         android:layout_height="511dp"
-        android:layout_weight=".8"></android.support.v7.widget.RecyclerView>
+        android:layout_weight=".8">
+
+    </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight=".2"
-        >
+        android:orientation="vertical">
 
         <Button
-            android:id="@+id/create_chirp_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/create_text_chirp_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="1"
-            android:text="Create Chirp" />
+            android:text="Create Text Chirp" />
+
+        <Button
+            android:id="@+id/create_image_chirp_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Create Image Chirp" />
 
         <Button
             android:id="@+id/add_remove_user"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Add/Remove User" />
+
     </LinearLayout>
 
 </LinearLayout>

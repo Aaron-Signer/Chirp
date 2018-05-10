@@ -31,11 +31,11 @@ public class RequestManager {
 
     //private static final String BASE_URL = "http://chirp-env-1.rgkwwzpdqw.us-east-2.elasticbeanstalk.com";
     //private static final String BASE_URL = "http://192.168.1.2:5000";
-    private static final String BASE_URL = "http://chirp-env-1.rgkwwzpdqw.us-east-2.elasticbeanstalk.com";
+    private static final String BASE_URL = "http://chirp-env-1.qjy3gxteuz.us-east-2.elasticbeanstalk.com";
 
     private RequestQueue requestQueue;
 
-    public void sendListChirpsRequest(String e,Context c, final ListUsersResponseHandler handler) {
+    public void sendListChirpsRequest(String e,Context c, final ListChirpsResponseHandler handler) {
         RequestQueue queue = getRequestQueue(c);
         String url = BASE_URL+"/users/watchlist"+"/"+e;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -50,6 +50,31 @@ public class RequestManager {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d("HTTP","That didn't work!");
+                NetworkResponse n = error.networkResponse;
+                int status = n.statusCode;
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    public void sendUserListRequest(String e,Context c, final ListUsersResponseHandler handler) {
+        RequestQueue queue = getRequestQueue(c);
+        String url = BASE_URL+"/users/getWatchedList"+"/"+e;
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("HTTP", "Response is: "+ response);
+                        Gson gson = new Gson();
+                        String[] users = gson.fromJson(response, String[].class);
+                        handler.handleResponse(Arrays.asList(users));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
                 Log.d("HTTP","That didn't work!");
                 NetworkResponse n = error.networkResponse;
                 int status = n.statusCode;
