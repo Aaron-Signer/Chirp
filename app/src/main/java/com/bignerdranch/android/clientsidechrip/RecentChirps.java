@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RecentChirps extends AppCompatActivity
 {
@@ -129,7 +131,8 @@ public class RecentChirps extends AppCompatActivity
             }
         });
 
-        updateUI();
+            updateUI();
+
     }
 
     private void updateUI()
@@ -139,18 +142,23 @@ public class RecentChirps extends AppCompatActivity
             chirpRecyclerView.setAdapter(rvAdapter);
         }
         rvAdapter.notifyDataSetChanged();
+
+            sendListChirpsRequest();
+
         // schedule request
-        sendListChirpsRequest();
+        //sendListChirpsRequest();
     }
 
     private void sendListChirpsRequest() {
-        RequestManager.get()
-                .sendListChirpsRequest(email,this,
-                        (chirps) -> {
-                            chirpList = chirps;
-                            chirpList = getSortedChirpList();
-                            updateUI();
-                        });
+            RequestManager.get()
+                    .sendListChirpsRequest(email, this,
+                            (chirps) -> {
+                                chirpList = chirps;
+                                chirpList = getSortedChirpList();
+                                updateUI();
+                            });
+
+
     }
 
     public ArrayList<Chirp> getSortedChirpList()
